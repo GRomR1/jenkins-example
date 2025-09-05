@@ -7,10 +7,20 @@ pipeline {
         stage('Stage 1') {
             steps {
                 echo 'Hello world!'
-                sleep time: 60, unit: 'SECONDS'
+                sleep time: 10, unit: 'SECONDS'
                 echo "Parameter 1 is ${params.param1}"
                 echo "Build number is ${currentBuild.number}"
                 echo "env.BUILD_ID is ${env.BUILD_ID}"
+            }
+        }
+        stage('Stage 2') {
+            steps {
+                echo 'Hello stage 2!'
+                copyArtifacts projectName: 'jenkins-example', filter: '**/*.txt', target: 'artifacts/'
+                script {
+                    sh 'ls artifacts/'
+                    sh 'cat artifacts/*'
+                }
             }
         }
     }

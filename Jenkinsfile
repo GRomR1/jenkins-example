@@ -24,10 +24,13 @@ pipeline {
         stage ('Invoke_pipeline') {
             steps {
                 echo 'See job results on project "jenkins-example-child"'
+                sh """
+                  echo "Build result is ${currentBuild.result}" > artifacts.txt
+                """
                 build job: 'jenkins-example-child', parameters: [
                   string(name: 'param1', value: "${env.BUILD_ID}")
                 ]
-                echo 'Result is ${currentBuild.result}'
+                echo "Build number is ${currentBuild.currentResult}"
                 sh """
                   echo "Build result is ${currentBuild.result}" > result.txt
                 """
@@ -38,7 +41,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'result.txt', fingerprint: true
+            archiveArtifacts artifacts: '*.txt', fingerprint: true
         }
     }
 }
