@@ -20,7 +20,7 @@ pipeline {
             steps {
                 sh 'echo "Service user is $SERVICE_CREDS_USR"'
                 sh 'echo "Service password is $SERVICE_CREDS_PSW"'
-                sh 'curl -v -u $SERVICE_CREDS https://httpbin.org/basic-auth/admin/admin'
+                sh 'curl -sS -u $SERVICE_CREDS https://httpbin.org/basic-auth/admin/admin'
             }
         }
 
@@ -28,14 +28,18 @@ pipeline {
             steps {
                 echo 'See job results on project "jenkins-example-child"'
                 sh """
-                  echo "Build result is ${currentBuild.result}" > artifacts.txt
+                  echo "Downstream project is ${env.JOB_NAME}" > downstream_artifact.txt
                 """
+                // https://www.jenkins.io/doc/pipeline/steps/pipeline-build-step/
                 build job: 'jenkins-example-child', parameters: [
                   string(name: 'param1', value: "${env.BUILD_ID}")
                 ]
-                echo "Build number is ${currentBuild.currentResult}"
+
+                echo "Child project result is ${currentBuild.currentResult}"
+                echo "Child project result is ${currentBuild.result}"
+
                 sh """
-                  echo "Build result is ${currentBuild.result}" > result.txt
+                  echo "Build result is ${currentBuild.currentResult}" > result.txt
                 """
             }
         }

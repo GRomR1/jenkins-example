@@ -16,7 +16,10 @@ pipeline {
         stage('Stage 2') {
             steps {
                 echo 'Hello stage 2!'
-                copyArtifacts projectName: 'jenkins-example', filter: '**/*.txt', target: 'artifacts/'
+                copyArtifacts(
+                    projectName: 'jenkins-example', filter: '**/*.txt', target: 'artifacts/',
+                    selector: specific("${params.param1}")
+                )
                 script {
                     sh 'ls artifacts/'
                     sh 'cat artifacts/*'
