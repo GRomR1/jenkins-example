@@ -23,13 +23,23 @@ pipeline {
                 sh 'curl -sS -u $SERVICE_CREDS https://httpbin.org/basic-auth/admin/admin'
             }
         }
-
-        stage ('Invoke_pipeline') {
+        stage ('create artifacts') {
             steps {
-                echo 'See job results on project "jenkins-example-child"'
                 sh """
-                  echo "Downstream project is ${env.JOB_NAME}" > downstream_artifact.txt
+                  echo "Creating artifacts..."
+                  sh """
+                    echo "Downstream project is ${env.JOB_NAME}" > downstream_artifact.txt
+                  """
                 """
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: '*.txt', fingerprint: true
+                }
+            }
+        }
+        stage ('invoke child pipeline') {
+            steps {
                 // https://www.jenkins.io/doc/pipeline/steps/pipeline-build-step/
                 build job: 'jenkins-example-child', parameters: [
                   string(name: 'param1', value: "${env.BUILD_ID}")
@@ -37,18 +47,8 @@ pipeline {
 
                 echo "Child project result is ${currentBuild.currentResult}"
                 echo "Child project result is ${currentBuild.result}"
-
-                sh """
-                  echo "Build result is ${currentBuild.currentResult}" > result.txt
-                """
             }
         }
 
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: '*.txt', fingerprint: true
-        }
     }
 }
