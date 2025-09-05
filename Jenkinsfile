@@ -25,12 +25,12 @@ pipeline {
         }
         stage ('create artifacts') {
             steps {
-                sh """
+                script {
                   echo "Creating artifacts..."
                   sh """
                     echo "Downstream project is ${env.JOB_NAME}" > downstream_artifact.txt
                   """
-                """
+                }
             }
             post {
                 always {
