@@ -27,8 +27,18 @@ pipeline {
                 build job: 'jenkins-example-child', parameters: [
                   string(name: 'param1', value: "${env.BUILD_ID}")
                 ]
+                echo 'Result is ${currentBuild.result}'
+                sh """
+                  echo "Build result is ${currentBuild.result}" > result.txt
+                """
             }
         }
 
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'result.txt', fingerprint: true
+        }
     }
 }
