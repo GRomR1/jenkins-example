@@ -1,6 +1,9 @@
 
 pipeline {
     agent any
+    options {
+        copyArtifactPermission('jenkins-example-child');
+    }
     stages {
         stage('Stage 1') {
             steps {
