@@ -13,7 +13,7 @@ pipeline {
             }
         }
 
-        stage('Example Username/Password') {
+        stage('curl with credentials') {
             environment {
                 SERVICE_CREDS = credentials('my-predefined-username-password')
             }
